@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Race Split Planner</title>
+
   <style>
     :root {
       --bg: #070b16;
@@ -108,11 +109,14 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #dbeafe;
-      font-weight: 900;
-      font-size: 22px;
-      letter-spacing: 1px;
+      overflow: hidden;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+
+    .hero-image-placeholder img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
 
     h1 {
@@ -351,21 +355,24 @@
       .result-head, .total { grid-template-columns: 1fr; display: grid; }
       th:nth-child(2), td:nth-child(2) { display: none; }
       .intro, .calculator, .resultado { padding: 22px; }
+
       .hero-brand {
         grid-template-columns: 110px 1fr;
         gap: 18px;
       }
+
       .hero-image-placeholder {
         width: 110px;
         height: 110px;
-        font-size: 16px;
       }
+
       h1 {
         font-size: clamp(30px, 9vw, 42px);
       }
     }
   </style>
 </head>
+
 <body>
   <main class="app">
     <section class="hero">
@@ -376,16 +383,18 @@
 
         <div class="hero-brand">
           <div class="hero-image-placeholder">
-             <img src="logo.png" style="width:100%;height:100%;object-fit:contain;">
+            <img src="logo.png" alt="Logo">
           </div>
+
           <h1>Planeje sua prova com parciais inteligentes.</h1>
         </div>
+
         <p class="lead">
           Informe sua prova e o tempo objetivo. A aplicação distribui o tempo nas parciais com base em padrões médios de performance para cada distância e estilo.
         </p>
 
         <div class="formula">
-          <div class="mini"><strong>11</strong><span>provas configuradas</span></div>
+          <div class="mini"><strong>13</strong><span>provas configuradas</span></div>
           <div class="mini"><strong>50m/100m</strong><span>parciais por distância</span></div>
           <div class="mini"><strong>100%</strong><span>cálculo automático</span></div>
         </div>
@@ -402,7 +411,7 @@
 
         <div class="field">
           <label for="tempo">Tempo objetivo</label>
-          <input id="tempo" type="text" placeholder="Ex.: 2:08.87" />
+          <input id="tempo" type="text" placeholder="Ex.: 18:30.00" />
           <div class="hint">Formato recomendado: minutos:segundos.centésimos</div>
         </div>
 
@@ -433,6 +442,7 @@
           <span>Tempo objetivo</span>
           <strong id="tempoObjetivo"></strong>
         </div>
+
         <div class="total-box">
           <span>Soma das parciais</span>
           <strong id="somaParciais"></strong>
@@ -440,25 +450,113 @@
       </div>
     </section>
 
-    <p class="footer-note">Ferramenta desenvolvida pela AFAEA para o projeto SWIMITI 2026. Os resultados são estimativas e devem ser ajustados pelo treinador conforme perfil do atleta.</p>
+    <p class="footer-note">
+      Ferramenta desenvolvida pela AFAEA para o projeto SWIMITI 2026. Os resultados são estimativas e devem ser ajustados pelo treinador conforme perfil do atleta.
+    </p>
   </main>
 
   <script>
     const provas = {
-      "100m Livre": { parciais: ["1º 50m", "2º 50m"], medias: [0.4783, 0.5215] },
-      "200m Livre": { parciais: ["1º 50m", "2º 50m", "3º 50m", "4º 50m"], medias: [0.2335, 0.2543, 0.2562, 0.2556] },
-      "400m Livre": { parciais: ["1º 100m", "2º 100m", "3º 100m", "4º 100m"], medias: [0.2330, 0.2550, 0.2558, 0.2562] },
-      "100m Costas": { parciais: ["1º 50m", "2º 50m"], medias: [0.4746, 0.5252] },
-      "200m Costas": { parciais: ["1º 50m", "2º 50m", "3º 50m", "4º 50m"], medias: [0.2323, 0.2529, 0.2539, 0.2606] },
-      "100m Borboleta": { parciais: ["1º 50m", "2º 50m"], medias: [0.4692, 0.5307] },
-      "200m Borboleta": { parciais: ["1º 50m", "2º 50m", "3º 50m", "4º 50m"], medias: [0.2278, 0.2559, 0.2561, 0.2599] },
-      "100m Peito": { parciais: ["1º 50m", "2º 50m"], medias: [0.4697, 0.5301] },
-      "200m Peito": { parciais: ["1º 50m", "2º 50m", "3º 50m", "4º 50m"], medias: [0.2304, 0.2547, 0.2567, 0.2578] },
-      "200m Medley": { parciais: ["50m Borboleta", "50m Costas", "50m Peito", "50m Livre"], medias: [0.2258, 0.2561, 0.2895, 0.2287] },
-      "400m Medley": { parciais: ["100m Borboleta", "100m Costas", "100m Peito", "100m Livre"], medias: [0.2282, 0.2561, 0.2870, 0.2286] }
+      "100m Livre": {
+        parciais: ["1º 50m", "2º 50m"],
+        medias: [0.4783, 0.5215]
+      },
+
+      "200m Livre": {
+        parciais: ["1º 50m", "2º 50m", "3º 50m", "4º 50m"],
+        medias: [0.2335, 0.2543, 0.2562, 0.2556]
+      },
+
+      "400m Livre": {
+        parciais: ["1º 100m", "2º 100m", "3º 100m", "4º 100m"],
+        medias: [0.2330, 0.2550, 0.2558, 0.2562]
+      },
+
+      "800m Livre": {
+        parciais: [
+          "1º 100m", "2º 100m", "3º 100m", "4º 100m",
+          "5º 100m", "6º 100m", "7º 100m", "8º 100m"
+        ],
+        medias: [
+          0.11625,
+          0.124375,
+          0.125625,
+          0.126875,
+          0.127500,
+          0.128125,
+          0.128125,
+          0.123125
+        ]
+      },
+
+      "1500m Livre": {
+        parciais: [
+          "1º 100m", "2º 100m", "3º 100m", "4º 100m", "5º 100m",
+          "6º 100m", "7º 100m", "8º 100m", "9º 100m", "10º 100m",
+          "11º 100m", "12º 100m", "13º 100m", "14º 100m", "15º 100m"
+        ],
+        medias: [
+          0.059595,
+          0.065223,
+          0.066216,
+          0.066879,
+          0.067210,
+          0.067408,
+          0.067541,
+          0.067541,
+          0.067673,
+          0.067872,
+          0.068203,
+          0.068203,
+          0.068335,
+          0.068534,
+          0.063568
+        ]
+      },
+
+      "100m Costas": {
+        parciais: ["1º 50m", "2º 50m"],
+        medias: [0.4746, 0.5252]
+      },
+
+      "200m Costas": {
+        parciais: ["1º 50m", "2º 50m", "3º 50m", "4º 50m"],
+        medias: [0.2323, 0.2529, 0.2539, 0.2606]
+      },
+
+      "100m Borboleta": {
+        parciais: ["1º 50m", "2º 50m"],
+        medias: [0.4692, 0.5307]
+      },
+
+      "200m Borboleta": {
+        parciais: ["1º 50m", "2º 50m", "3º 50m", "4º 50m"],
+        medias: [0.2278, 0.2559, 0.2561, 0.2599]
+      },
+
+      "100m Peito": {
+        parciais: ["1º 50m", "2º 50m"],
+        medias: [0.4697, 0.5301]
+      },
+
+      "200m Peito": {
+        parciais: ["1º 50m", "2º 50m", "3º 50m", "4º 50m"],
+        medias: [0.2304, 0.2547, 0.2567, 0.2578]
+      },
+
+      "200m Medley": {
+        parciais: ["50m Borboleta", "50m Costas", "50m Peito", "50m Livre"],
+        medias: [0.2258, 0.2561, 0.2895, 0.2287]
+      },
+
+      "400m Medley": {
+        parciais: ["100m Borboleta", "100m Costas", "100m Peito", "100m Livre"],
+        medias: [0.2282, 0.2561, 0.2870, 0.2286]
+      }
     };
 
     const selectProva = document.getElementById("prova");
+
     Object.keys(provas).forEach(nome => {
       const option = document.createElement("option");
       option.value = nome;
@@ -468,17 +566,23 @@
 
     function converterParaSegundos(valor) {
       valor = valor.trim().replace(",", ".");
+
       if (!valor) return NaN;
+
       const partes = valor.split(":");
 
-      if (partes.length === 1) return parseFloat(partes[0]);
+      if (partes.length === 1) {
+        return parseFloat(partes[0]);
+      }
 
       if (partes.length === 2) {
         return parseInt(partes[0], 10) * 60 + parseFloat(partes[1]);
       }
 
       if (partes.length === 3) {
-        return parseInt(partes[0], 10) * 60 + parseInt(partes[1], 10) + parseInt(partes[2], 10) / 100;
+        return parseInt(partes[0], 10) * 60 +
+               parseInt(partes[1], 10) +
+               parseInt(partes[2], 10) / 100;
       }
 
       return NaN;
@@ -486,10 +590,13 @@
 
     function formatarTempo(segundos) {
       let totalCentesimos = Math.round(segundos * 100);
+
       const minutos = Math.floor(totalCentesimos / 6000);
       totalCentesimos -= minutos * 6000;
+
       const seg = Math.floor(totalCentesimos / 100);
       const cent = totalCentesimos % 100;
+
       return minutos > 0
         ? `${minutos}:${String(seg).padStart(2, "0")}.${String(cent).padStart(2, "0")}`
         : `${seg}.${String(cent).padStart(2, "0")}`;
@@ -509,7 +616,7 @@
       const tempoSegundos = converterParaSegundos(tempoTexto);
 
       if (isNaN(tempoSegundos) || tempoSegundos <= 0) {
-        erro.textContent = "Informe um tempo válido. Exemplo: 2:08.87 ou 58.30";
+        erro.textContent = "Informe um tempo válido. Exemplo: 18:30.00 ou 4:38.50";
         erro.style.display = "block";
         return;
       }
@@ -520,23 +627,29 @@
       prova.parciais.forEach((parcial, i) => {
         const percentual = prova.medias[i];
         const tempoParcial = tempoSegundos * percentual;
+
         soma += tempoParcial;
 
         const tr = document.createElement("tr");
+
         tr.innerHTML = `
           <td><strong>${parcial}</strong></td>
           <td>
             ${(percentual * 100).toFixed(2)}%
-            <div class="bar-wrap"><div class="bar" style="width:${percentual * 100}%"></div></div>
+            <div class="bar-wrap">
+              <div class="bar" style="width:${percentual * 100}%"></div>
+            </div>
           </td>
           <td><strong>${formatarTempo(tempoParcial)}</strong></td>
         `;
+
         corpo.appendChild(tr);
       });
 
       document.getElementById("provaSelecionada").textContent = nomeProva;
       document.getElementById("tempoObjetivo").textContent = formatarTempo(tempoSegundos);
       document.getElementById("somaParciais").textContent = formatarTempo(soma);
+
       resultado.style.display = "block";
       resultado.scrollIntoView({ behavior: "smooth", block: "start" });
     }
