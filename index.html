@@ -85,11 +85,41 @@
       font-weight: 700;
     }
 
+    .brand-line {
+      margin-bottom: 24px;
+    }
+
+    .hero-brand {
+      display: grid;
+      grid-template-columns: 155px 1fr;
+      gap: 28px;
+      align-items: center;
+      margin-bottom: 22px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-image-placeholder {
+      width: 155px;
+      height: 155px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.16);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #dbeafe;
+      font-weight: 900;
+      font-size: 22px;
+      letter-spacing: 1px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+
     h1 {
-      font-size: clamp(36px, 5vw, 64px);
-      line-height: .96;
+      font-size: clamp(34px, 4.4vw, 58px);
+      line-height: .95;
       letter-spacing: -2px;
-      margin: 22px 0 18px;
+      margin: 0;
     }
 
     .lead {
@@ -321,6 +351,18 @@
       .result-head, .total { grid-template-columns: 1fr; display: grid; }
       th:nth-child(2), td:nth-child(2) { display: none; }
       .intro, .calculator, .resultado { padding: 22px; }
+      .hero-brand {
+        grid-template-columns: 110px 1fr;
+        gap: 18px;
+      }
+      .hero-image-placeholder {
+        width: 110px;
+        height: 110px;
+        font-size: 16px;
+      }
+      h1 {
+        font-size: clamp(30px, 9vw, 42px);
+      }
     }
   </style>
 </head>
@@ -328,8 +370,14 @@
   <main class="app">
     <section class="hero">
       <div class="intro panel">
-        <div class="badge">Assossiação Família Atleta de Esportes Aquáticos</div>
-        <h1>Planeje sua prova com parciais inteligentes.</h1>
+        <div class="brand-line">
+          <div class="badge">ASSOCIAÇÃO FAMÍLIA ATLETA DE ESPORTES AQUÁTICOS</div>
+        </div>
+
+        <div class="hero-brand">
+          <div class="hero-image-placeholder">IMAGEM</div>
+          <h1>Planeje sua prova com parciais inteligentes.</h1>
+        </div>
         <p class="lead">
           Informe sua prova e o tempo objetivo. A aplicação distribui o tempo nas parciais com base em padrões médios de performance para cada distância e estilo.
         </p>
