@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Race Split Planner</title>
+  <style>
+    :root {
+      --bg: #070b16;
+      --card: rgba(255, 255, 255, 0.085);
+      --card-strong: rgba(255, 255, 255, 0.13);
+      --line: rgba(255, 255, 255, 0.16);
+      --text: #f8fafc;
+      --muted: #a7b0c2;
+      --accent: #38bdf8;
+      --accent-2: #22d3ee;
+      --success: #34d399;
+      --danger: #fb7185;
+      --shadow: 0 28px 80px rgba(0, 0, 0, .45);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, .28), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(34, 211, 238, .18), transparent 35%),
+        linear-gradient(135deg, #050816 0%, #08111f 48%, #030712 100%);
+      padding: 34px 18px;
+    }
+
+    .app {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .intro {
+      padding: 38px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intro::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      bottom: -80px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: rgba(56, 189, 248, .12);
+    }
+
+    .badge {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 12px;
+      border: 1px solid rgba(56, 189, 248, .32);
+      border-radius: 999px;
+      color: #bae6fd;
+      background: rgba(14, 165, 233, .10);
+      font-size: 13px;
+      letter-spacing: .3px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    h1 {
+      font-size: clamp(36px, 5vw, 64px);
+      line-height: .96;
+      letter-spacing: -2px;
+      margin: 22px 0 18px;
+    }
+
+    .lead {
+      max-width: 650px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    .formula {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .mini {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.11);
+    }
+
+    .mini strong {
+      display: block;
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+
+    .mini span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .calculator {
+      padding: 28px;
+    }
+
+    .card-title {
+      font-size: 22px;
+      margin: 0 0 6px;
+      letter-spacing: -.4px;
+    }
+
+    .card-subtitle {
+      color: var(--muted);
+      margin: 0 0 24px;
+      line-height: 1.5;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: #dbeafe;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    select, input {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(15, 23, 42, .72);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 15px 16px;
+      font-size: 16px;
+      outline: none;
+      transition: .2s ease;
+    }
+
+    select:focus, input:focus {
+      border-color: rgba(56, 189, 248, .7);
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, .14);
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 10px;
+      border: none;
+      border-radius: 18px;
+      padding: 16px 20px;
+      color: #03131f;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+      box-shadow: 0 18px 40px rgba(34, 211, 238, .23);
+      transition: .18s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.06);
+    }
+
+    .erro {
+      display: none;
+      margin-top: 16px;
+      color: #fecdd3;
+      background: rgba(251, 113, 133, .13);
+      border: 1px solid rgba(251, 113, 133, .25);
+      padding: 13px 14px;
+      border-radius: 14px;
+      font-weight: 700;
+    }
+
+    .resultado {
+      display: none;
+      margin-top: 28px;
+      padding: 28px;
+    }
+
+    .result-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-end;
+      margin-bottom: 18px;
+    }
+
+    .result-head h2 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: -.8px;
+    }
+
+    .pill {
+      display: inline-flex;
+      padding: 9px 13px;
+      border-radius: 999px;
+      background: rgba(52, 211, 153, .13);
+      border: 1px solid rgba(52, 211, 153, .25);
+      color: #bbf7d0;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 18px;
+    }
+
+    th, td {
+      padding: 16px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+    }
+
+    th {
+      color: #bfdbfe;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      text-align: left;
+      background: rgba(255,255,255,.07);
+    }
+
+    td {
+      color: #f8fafc;
+      background: rgba(255,255,255,.035);
+    }
+
+    .bar-wrap {
+      height: 9px;
+      width: 100%;
+      border-radius: 999px;
+      background: rgba(255,255,255,.10);
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .bar {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--success));
+    }
+
+    .total {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .total-box {
+      padding: 18px;
+      border-radius: 18px;
+      background: var(--card-strong);
+      border: 1px solid var(--line);
+    }
+
+    .total-box span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .total-box strong {
+      font-size: 24px;
+    }
+
+    .footer-note {
+      margin: 22px 4px 0;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; }
+      .formula { grid-template-columns: 1fr; }
+      .result-head, .total { grid-template-columns: 1fr; display: grid; }
+      th:nth-child(2), td:nth-child(2) { display: none; }
+      .intro, .calculator, .resultado { padding: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <div class="intro panel">
+        <div class="badge">Race Split Planner</div>
+        <h1>Planeje sua prova com parciais inteligentes.</h1>
+        <p class="lead">
+          Informe sua prova e o tempo objetivo. A aplicação distribui o tempo nas parciais com base em padrões médios de performance para cada distância e estilo.
+        </p>
+
+        <div class="formula">
+          <div class="mini"><strong>11</strong><span>provas configuradas</span></div>
+          <div class="mini"><strong>50m/100m</strong><span>parciais por distância</span></div>
+          <div class="mini"><strong>100%</strong><span>cálculo automático</span></div>
+        </div>
+      </div>
+
+      <div class="calculator panel">
+        <h2 class="card-title">Calculadora de parciais</h2>
+        <p class="card-subtitle">Use tempos como 2:08.87, 2:08:87, 58.30 ou 128.87.</p>
+
+        <div class="field">
+          <label for="prova">Prova</label>
+          <select id="prova"></select>
+        </div>
+
+        <div class="field">
+          <label for="tempo">Tempo objetivo</label>
+          <input id="tempo" type="text" placeholder="Ex.: 2:08.87" />
+          <div class="hint">Formato recomendado: minutos:segundos.centésimos</div>
+        </div>
+
+        <button onclick="calcularParciais()">Calcular estratégia de prova</button>
+        <div id="erro" class="erro"></div>
+      </div>
+    </section>
+
+    <section id="resultado" class="resultado panel">
+      <div class="result-head">
+        <h2>Parciais estimadas</h2>
+        <div id="provaSelecionada" class="pill"></div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Parcial</th>
+            <th>Distribuição</th>
+            <th>Tempo estimado</th>
+          </tr>
+        </thead>
+        <tbody id="corpoResultado"></tbody>
+      </table>
+
+      <div class="total">
+        <div class="total-box">
+          <span>Tempo objetivo</span>
+          <strong id="tempoObjetivo"></strong>
+        </div>
+        <div class="total-box">
+          <span>Soma das parciais</span>
+          <strong id="somaParciais"></strong>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer-note">Ferramenta independente para planejamento esportivo. Os resultados são estimativas e devem ser ajustados pelo treinador conforme perfil do atleta.</p>
+  </main>
+
+  <script>
+    const provas = {
+      "100m Livre": { parciais: ["1º 50m", "2º 50m"], medias: [0.4783, 0.5215] },
+      "200m Livre": { parciais: ["1º 50m", "2º 50m", "3º 50m", "4º 50m"], medias: [0.2335, 0.2543, 0.2562, 0.2556] },
+      "400m Livre": { parciais: ["1º 100m", "2º 100m", "3º 100m", "4º 100m"], medias: [0.2330, 0.2550, 0.2558, 0.2562] },
+      "100m Costas": { parciais: ["1º 50m", "2º 50m"], medias: [0.4746, 0.5252] },
+      "200m Costas": { parciais: ["1º 50m", "2º 50m", "3º 50m", "4º 50m"], medias: [0.2323, 0.2529, 0.2539, 0.2606] },
+      "100m Borboleta": { parciais: ["1º 50m", "2º 50m"], medias: [0.4692, 0.5307] },
+      "200m Borboleta": { parciais: ["1º 50m", "2º 50m", "3º 50m", "4º 50m"], medias: [0.2278, 0.2559, 0.2561, 0.2599] },
+      "100m Peito": { parciais: ["1º 50m", "2º 50m"], medias: [0.4697, 0.5301] },
+      "200m Peito": { parciais: ["1º 50m", "2º 50m", "3º 50m", "4º 50m"], medias: [0.2304, 0.2547, 0.2567, 0.2578] },
+      "200m Medley": { parciais: ["50m Borboleta", "50m Costas", "50m Peito", "50m Livre"], medias: [0.2258, 0.2561, 0.2895, 0.2287] },
+      "400m Medley": { parciais: ["100m Borboleta", "100m Costas", "100m Peito", "100m Livre"], medias: [0.2282, 0.2561, 0.2870, 0.2286] }
+    };
+
+    const selectProva = document.getElementById("prova");
+    Object.keys(provas).forEach(nome => {
+      const option = document.createElement("option");
+      option.value = nome;
+      option.textContent = nome;
+      selectProva.appendChild(option);
+    });
+
+    function converterParaSegundos(valor) {
+      valor = valor.trim().replace(",", ".");
+      if (!valor) return NaN;
+      const partes = valor.split(":");
+
+      if (partes.length === 1) return parseFloat(partes[0]);
+
+      if (partes.length === 2) {
+        return parseInt(partes[0], 10) * 60 + parseFloat(partes[1]);
+      }
+
+      if (partes.length === 3) {
+        return parseInt(partes[0], 10) * 60 + parseInt(partes[1], 10) + parseInt(partes[2], 10) / 100;
+      }
+
+      return NaN;
+    }
+
+    function formatarTempo(segundos) {
+      let totalCentesimos = Math.round(segundos * 100);
+      const minutos = Math.floor(totalCentesimos / 6000);
+      totalCentesimos -= minutos * 6000;
+      const seg = Math.floor(totalCentesimos / 100);
+      const cent = totalCentesimos % 100;
+      return minutos > 0
+        ? `${minutos}:${String(seg).padStart(2, "0")}.${String(cent).padStart(2, "0")}`
+        : `${seg}.${String(cent).padStart(2, "0")}`;
+    }
+
+    function calcularParciais() {
+      const nomeProva = document.getElementById("prova").value;
+      const tempoTexto = document.getElementById("tempo").value;
+      const erro = document.getElementById("erro");
+      const resultado = document.getElementById("resultado");
+      const corpo = document.getElementById("corpoResultado");
+
+      erro.style.display = "none";
+      resultado.style.display = "none";
+      corpo.innerHTML = "";
+
+      const tempoSegundos = converterParaSegundos(tempoTexto);
+
+      if (isNaN(tempoSegundos) || tempoSegundos <= 0) {
+        erro.textContent = "Informe um tempo válido. Exemplo: 2:08.87 ou 58.30";
+        erro.style.display = "block";
+        return;
+      }
+
+      const prova = provas[nomeProva];
+      let soma = 0;
+
+      prova.parciais.forEach((parcial, i) => {
+        const percentual = prova.medias[i];
+        const tempoParcial = tempoSegundos * percentual;
+        soma += tempoParcial;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>${parcial}</strong></td>
+          <td>
+            ${(percentual * 100).toFixed(2)}%
+            <div class="bar-wrap"><div class="bar" style="width:${percentual * 100}%"></div></div>
+          </td>
+          <td><strong>${formatarTempo(tempoParcial)}</strong></td>
+        `;
+        corpo.appendChild(tr);
+      });
+
+      document.getElementById("provaSelecionada").textContent = nomeProva;
+      document.getElementById("tempoObjetivo").textContent = formatarTempo(tempoSegundos);
+      document.getElementById("somaParciais").textContent = formatarTempo(soma);
+      resultado.style.display = "block";
+      resultado.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  </script>
+</body>
+</html>
